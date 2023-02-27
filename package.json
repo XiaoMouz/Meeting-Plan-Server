@@ -1,0 +1,17 @@
+{
+  "name": "meetingappserver",
+  "version": "0.0.1-beta",
+  "description": "None description",
+  "main": "routes/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "XiaoMouz",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^3.2.4",
+    "express": "^4.18.2",
+    "mysql": "^2.18.1",
+    "sequelize": "^6.29.0"
+  }
+}
