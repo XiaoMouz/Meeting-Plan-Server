@@ -1,6 +1,6 @@
 {
-    "host": "",
-    "database": "",
-    "username": "",
-    "password": ""
+    "host": "106.55.177.139",
+    "database": "mtapp-db",
+    "username": "mtapp-db",
+    "password": "RazDdB4st5CppAM2"
 }
