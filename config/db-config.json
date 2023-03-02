@@ -1,5 +1,6 @@
 {
     "host": "106.55.177.139",
+    "port": "3306",
     "database": "mtapp-db",
     "username": "mtapp-db",
     "password": "RazDdB4st5CppAM2"
