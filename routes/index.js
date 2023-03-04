@@ -2,40 +2,32 @@ var express = require('express');
 var router = express.Router();
 var db = require('../db/connection');
 
-// get resource table from database
-getTables = (req, res, tableName) => {
+/**
+ * @param {Object} req request
+ * @param {Object} res response
+ * @param {String} tableName request table
+ * @param {Array} paramArr the parameters of sql
+ * @returns {void}
+ * @description get data from database
+ */
+getTables = (req, res, tableName, paramArr) => {
     var sql = "select * from " + tableName
-    var sqlArr = []
     var callBack = (err, data) => {
         if (err) {
-            console.error("Error: Fuck up in index.js > Function getRes > callBack failed, case:" + err)
+            console.error("Error(index.js): Fuck up callBack failed, case:" + err)
         }
         else {
-            res.send(data)
+            res.send({data})
         }
     }
-    db.sqlConnect(sql, sqlArr, callBack)
-}
-
-router.get('/info/res', (req, res) => getTables(req, res, "resources"))
-router.get('/info/notice', (req, res) => getTables(req, res, "notices"))
+    db.sqlConnect(sql, paramArr, callBack)
+};
 
 
-/* Test Functions */
-router.get('/', (req, res, next) => {
-    res.send("Hi,there is your request info:\n" +
-        "req.method: " + req.method +
-        "\nreq.url: " + req.url
-    )
-});
+// resource interface
+router.get('/info/res', (req, res) => getTables(req, res, "resources"));
 
-router.post('/', (req, res, next) => {
-    res.send("Hi,there is your request info:\n" +
-        "req.method: " + req.method +
-        "\nreq.url: " + req.url +
-        "\nreq.content: " + req.body.msg
-    )
-});
-
+// notice interface
+router.get('/info/notice', (req, res) => getTables(req, res, "notices"));
 
 module.exports = router;
