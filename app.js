@@ -17,3 +17,7 @@ app.use('/', indexRouter);
 app.use('/user', usersRouter);
 
 module.exports = app;
+
+if (require.main === module) {
+    require('./bin/www')
+}
