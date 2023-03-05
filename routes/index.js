@@ -17,7 +17,7 @@ getTables = (req, res, tableName, paramArr) => {
             console.error("Error(index.js): Fuck up callBack failed, case:" + err)
         }
         else {
-            res.send({data})
+            res.send({ data })
         }
     }
     db.sqlConnect(sql, paramArr, callBack)
@@ -29,5 +29,7 @@ router.get('/info/res', (req, res) => getTables(req, res, "resources"));
 
 // notice interface
 router.get('/info/notice', (req, res) => getTables(req, res, "notices"));
+
+router.get('/info/user', (req, res) => getTables(req, res, "users"))
 
 module.exports = router;

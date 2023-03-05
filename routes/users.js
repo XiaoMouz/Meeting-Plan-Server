@@ -10,19 +10,19 @@ var db = require('../db/connection');
  * @returns {void}
  * @description get data from database
  */
-getData = (req, res, sql, paramArr) => {
+getData = (req, res, sql, paramArr, callBack) => {
     if (paramArr == null) {
         paramArr = []
     }
-    var callBack = (err, data) => {
+
+    db.sqlConnect(sql, paramArr, (err, data) => {
         if (err) {
             console.error("Error(user.js): Fuck up callBack failed, case:" + err)
         }
         else {
-            return data
+            callBack(data)
         }
-    }
-    db.sqlConnect(sql, paramArr, callBack)
+    })
 };
 
 /**
@@ -36,7 +36,6 @@ router.get('/test', function (req, res, next) {
 
 router.post('/login', function (req, res, next) {
     var sql = "select * from users where username = ?"
-    var paramArr = [req.body.username]
 
     // check the request
     if (req.body.username == null || req.body.password == null) {
@@ -44,17 +43,17 @@ router.post('/login', function (req, res, next) {
     }
 
     // check the user
-    var user = getData(req, res, sql, paramArr)
-    
-    if (user == null) {
-        return res.send({ code: 0, msg: "user not exist" })
-    }
-    if (user.password != req.body.password) {
-        return res.send({ code: 0, msg: "password error" })
-    }
+    var user = getData(req, res, sql, req.body.username, (data) => {
+        if (data == null) {
+            return res.send({ code: 0, msg: "user not exist" })
+        }
 
+        if (data[0].password != req.body.password) {
+            return res.send({ code: 0, msg: "password error" })
+        }
 
-    return res.send({ code: 1, msg: "login success" })
+        return res.send({ code: 1, msg: "login success" })
+    })
 });
 
 
