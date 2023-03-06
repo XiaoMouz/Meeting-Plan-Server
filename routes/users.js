@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../db/connection');
+var encrypt = require('../util/encrypt')
 
 /**
  * @param {Object} req request
@@ -44,11 +45,13 @@ router.post('/login', function (req, res, next) {
 
     // check the user
     var user = getData(req, res, sql, req.body.username, (data) => {
+
+        console.log(encrypt.md5(req.body.password))
         if (data == null) {
             return res.send({ code: 0, msg: "user not exist" })
         }
 
-        if (data[0].password != req.body.password) {
+        if (data[0].password != encrypt.md5(req.body.password)) {
             return res.send({ code: 0, msg: "password error" })
         }
 
