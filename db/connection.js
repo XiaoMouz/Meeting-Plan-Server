@@ -16,8 +16,8 @@ module.exports = {
         var pool = mysql.createPool(this.config)
         pool.getConnection((err, conn) => {
             if (err) {
-                console.log('连接失败')
-                return
+                console.log(err)
+                return 
             }
             // 事件驱动回调
             conn.query(sql, sqlArr, callBack)

@@ -1,6 +1,6 @@
-var express = require('express');
-var router = express.Router();
-var db = require('../db/connection');
+const express = require('express');
+const router = express.Router();
+const db = require('../db/connection');
 
 /**
  * @param {Object} req request
@@ -11,8 +11,8 @@ var db = require('../db/connection');
  * @description get data from database
  */
 getTables = (req, res, tableName, paramArr) => {
-    var sql = "select * from " + tableName
-    var callBack = (err, data) => {
+    let sql = "select * from " + tableName
+    let callBack = (err, data) => {
         if (err) {
             console.error("Error(index.js): Fuck up callBack failed, case:" + err)
         }
