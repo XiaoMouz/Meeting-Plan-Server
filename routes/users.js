@@ -46,7 +46,6 @@ router.post('/login', function (req, res, next) {
     // check the user
     var user = getData(req, res, sql, req.body.username, (data) => {
 
-        console.log(encrypt.md5(req.body.password))
         if (data == null) {
             return res.send({ code: 0, msg: "user not exist" })
         }
