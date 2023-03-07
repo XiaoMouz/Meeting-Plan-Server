@@ -8,12 +8,16 @@ var app = require('../app');
 var debug = require('debug')('mtp-server-demo:server');
 var http = require('http');
 var bodyParser = require('body-parser');
+const settings = require('../config/settings.json');
+const { normalize } = require('path');
 
 /**
  * Get port from environment and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
+if (settings.port != "" && settings.port != null)
+    port = normalizePort(settings.port);
 app.set('port', port);
 
 /**

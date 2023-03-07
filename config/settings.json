@@ -1,0 +1,9 @@
+{
+    "name":"Test",
+    "ip":"",
+    "port":"3001",
+    "domain":"",
+    "options":{
+        "invite":"true"
+    }
+}
