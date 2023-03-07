@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const expressJWT = require('express-jwt')
-const key = "1@doawkp_2-$ssAS2"
+const key = require('../config/settings.json').options.tokenSecurityKey
 
 
 exports.getToken = (payload) => {
@@ -21,9 +21,4 @@ exports.verifyToken = (token) => {
             return { status: 0, message: "your token is wrong" }
         }
     }
-
-}
-
-exports.authToken = (token) => {
-
 }

@@ -1,9 +1,9 @@
 {
-    "name":"Test",
-    "ip":"",
+    "name":"Dev server",
+    "domain":"localhost",
     "port":"3001",
-    "domain":"",
     "options":{
-        "invite":"true"
+        "invite":"true",
+        "tokenSecurityKey":"1@doawkp_2-$ssAS2"
     }
 }

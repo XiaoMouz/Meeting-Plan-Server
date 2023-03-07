@@ -5,6 +5,7 @@ const db = require('../db/connection');
 const encrypt = require('../util/encrypt')
 const { getToken } = require('../util/token')
 const { verifyToken } = require('../util/token')
+const settings = require('../config/settings.json')
 
 /**
  * @param {Object} req request
@@ -29,9 +30,12 @@ getData = (req, res, sql, paramArr, callBack) => {
     })
 };
 
-
+/**
+ * Login Post
+ */
 router.post('/login', function (req, res, next) {
     const sql = "select * from users where username = ?"
+    const updateSQL = "UPDATE `users` SET `login_time` = ?, `login_ip` = ? WHERE `users`.`user_id` = ?"
 
     // check the request
     if (req.body.username == null || req.body.password == null) {
@@ -49,6 +53,9 @@ router.post('/login', function (req, res, next) {
             return res.send({ code: 0, msg: "password error" })
         }
 
+        // update the user login time and ip
+        getData(req, res, updateSQL, [new Date(), req.ip, data[0].user_id], undefined)
+
         return res.send({
             code: 1, msg: "login success",
             token: getToken({
@@ -58,6 +65,30 @@ router.post('/login', function (req, res, next) {
             })
         })
     })
+});
+
+/**
+ * Register Post
+ */
+router.post('/register', function (req, res, next) {
+    const sql = "insert into users (user_id, username, password, level, invite_code, register_time, register_ip, login_time, login_ip, phone, email, avatar_link) values (null, ?)"
+
+    // check the request
+    if (req.body.username == null || req.body.password == null) {
+        return res.send({ code: 0, msg: "request is null" })
+    }
+
+    // check the user
+
+
+    if (settings.options.invite == true) {
+        const inviteSQL = "select * from codes where invite_code = ? and type = 'invite'"
+        getData(req, res, inviteSQL, req.body.invite_code, (data) => {
+            if (data == null) {
+                return res.send({ code: 0, msg: "invite code error" })
+            }
+        })
+    }
 });
 
 /**
