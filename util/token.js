@@ -12,7 +12,7 @@ exports.verifyToken = (token) => {
         if (jwt.verify(token, key)) {
             return { status: 1, data: jwt.decode(token, key) }
         } else {
-            return { status: 0, message: "unkonw error - code: null" }
+            return { status: 0, message: "unknown error - code: null" }
         }
     } catch (err) {
         if (err.name == "TokenExpiredError") {
