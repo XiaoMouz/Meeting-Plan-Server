@@ -29,14 +29,6 @@ getData = (req, res, sql, paramArr, callBack) => {
     })
 };
 
-/**
- * path: /user/test
- * @description test the interface work statu
- */
-router.get('/test', function (req, res, next) {
-    res.send({ code: 1, msg: "test success" })
-});
-
 
 router.post('/login', function (req, res, next) {
     const sql = "select * from users where username = ?"
@@ -60,7 +52,7 @@ router.post('/login', function (req, res, next) {
         return res.send({
             code: 1, msg: "login success",
             token: getToken({
-                id: data[0].id,
+                id: data[0].user_id,
                 username: data[0].username,
                 level: data[0].level
             })
@@ -68,7 +60,24 @@ router.post('/login', function (req, res, next) {
     })
 });
 
+/**
+ * path: /user/test
+ * @description test the interface work statu
+ */
+router.get('/test', function (req, res, next) {
+    res.send({ code: 1, msg: "test success" })
+});
+
 router.post('/test', function (req, res, next) {
+    /** return types
+     * {
+     * "id": 1,
+     * "username": "XiaoMouz",
+     * "level": "admin",
+     * "iat": 1678153441,
+     * "exp": 1678239841
+     * }
+     */
     res.send(verifyToken(req.body.token))
 
 });

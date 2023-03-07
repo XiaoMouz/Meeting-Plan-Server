@@ -8,10 +8,20 @@ exports.getToken = (payload) => {
 }
 
 exports.verifyToken = (token) => {
-    if (jwt.verify(token, key))
-        return jwt.decode(token, key)
-    else
-        return null
+    try {
+        if (jwt.verify(token, key)) {
+            return { status: 1, data: jwt.decode(token, key) }
+        } else {
+            return { status: 0, message: "unkonw error - code: null" }
+        }
+    } catch (err) {
+        if (err.name == "TokenExpiredError") {
+            return { status: 0, message: "token is expired" }
+        } else {
+            return { status: 0, message: "your token is wrong" }
+        }
+    }
+
 }
 
 exports.authToken = (token) => {
