@@ -25,6 +25,9 @@ getData = (req, res, sql, paramArr, callBack) => {
             console.error("Error(user.js): Fuck up callBack failed, case:" + err)
         }
         else {
+            if (callBack == null || callBack == undefined) {
+                return;
+            }
             callBack(data)
         }
     })
@@ -79,9 +82,11 @@ router.post('/register', function (req, res, next) {
     }
 
     // check the user
-
-
     if (settings.options.invite == true) {
+        if (req.body.invite_code == "" || req.body.invite_code == null) {
+            return res.send({ code: 0, msg: "no invite code" })
+        }
+
         const inviteSQL = "select * from codes where invite_code = ? and type = 'invite'"
         getData(req, res, inviteSQL, req.body.invite_code, (data) => {
             if (data == null) {
