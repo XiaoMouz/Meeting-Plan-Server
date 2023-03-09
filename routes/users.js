@@ -78,6 +78,7 @@ router.post('/register', function (req, res, next) {
     }
     const db = new Model('users')
     // check the user
+    // todo: waiting for debug
     db.search({ username: req.body.username }, (err, data) => {
         if (data != undefined || data[0].username === req.body.username) {
             return res.send({ code: 0, msg: "user already exist" })
@@ -100,6 +101,7 @@ router.post('/register', function (req, res, next) {
         avatar_link: ""
     },
         (err, data) => {
+            // todo: waiting for debug
             if (err != null) {
                 console.log(err)
                 return res.send({ code: 0, msg: "register failed: " + err })
