@@ -17,7 +17,7 @@ module.exports = {
         pool.getConnection((err, conn) => {
             if (err) {
                 console.log(err)
-                return 
+                return
             }
             // 事件驱动回调
             conn.query(sql, sqlArr, callBack)
