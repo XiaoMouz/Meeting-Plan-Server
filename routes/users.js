@@ -1,99 +1,113 @@
 const express = require('express');
 const req = require('express/lib/request');
 const router = express.Router();
-const db = require('../db/connection');
 const encrypt = require('../util/encrypt')
 const { getToken } = require('../util/token')
 const { verifyToken } = require('../util/token')
-const settings = require('../config/settings.json')
-
-/**
- * @param {Object} req request
- * @param {Object} res response
- * @param {String} sql request sql
- * @param {Array} paramArr the parameters of sql
- * @returns {void}
- * @description get data from database
- */
-getData = (req, res, sql, paramArr, callBack) => {
-    if (paramArr == null) {
-        paramArr = []
-    }
-
-    db.sqlConnect(sql, paramArr, (err, data) => {
-        if (err) {
-            console.error("Error(user.js): Fuck up callBack failed, case:" + err)
-        }
-        else {
-            if (callBack == null || callBack == undefined) {
-                return;
-            }
-            callBack(data)
-        }
-    })
-};
+const settings = require('../config/settings.json');
+const { md5 } = require('../util/encrypt');
+const Model = require('../db/Model.js');
 
 /**
  * Login Post
  */
 router.post('/login', function (req, res, next) {
-    const sql = "select * from users where username = ?"
-    const updateSQL = "UPDATE `users` SET `login_time` = ?, `login_ip` = ? WHERE `users`.`user_id` = ?"
+    const db = new Model('users')
 
     // check the request
     if (req.body.username == null || req.body.password == null) {
         return res.send({ code: 0, msg: "request is null" })
     }
 
-    // check the user
-    let user = getData(req, res, sql, req.body.username, (data) => {
+    db.search({
+        username: req.body.username
+    },
+        (err, data) => {
+            if (data == null) {
+                return res.send({ code: 0, msg: "user not exist" })
+            }
 
-        if (data == null) {
-            return res.send({ code: 0, msg: "user not exist" })
-        }
+            if (data[0].password != encrypt.md5(req.body.password)) {
+                return res.send({ code: 0, msg: "password error" })
+            }
 
-        if (data[0].password != encrypt.md5(req.body.password)) {
-            return res.send({ code: 0, msg: "password error" })
-        }
+            // update the user login time and ip
 
-        // update the user login time and ip
-        getData(req, res, updateSQL, [new Date(), req.ip, data[0].user_id], undefined)
+            db.update({
+                login_time: new Date(), login_ip: req.ip
+            },
+                undefined,
+                { user_id: data[0].user_id })
 
-        return res.send({
-            code: 1, msg: "login success",
-            token: getToken({
-                id: data[0].user_id,
-                username: data[0].username,
-                level: data[0].level
+            return res.send({
+                code: 1,
+                msg: "login success",
+                data: {
+                    token: getToken({
+                        id: data[0].user_id,
+                        username: data[0].username,
+                        level: data[0].level
+                    })
+                }
             })
-        })
-    })
+        }
+    )
 });
 
 /**
  * Register Post
  */
 router.post('/register', function (req, res, next) {
-    const sql = "insert into users (user_id, username, password, level, invite_code, register_time, register_ip, login_time, login_ip, phone, email, avatar_link) values (null, ?)"
-
     // check the request
     if (req.body.username == null || req.body.password == null) {
         return res.send({ code: 0, msg: "request is null" })
     }
 
-    // check the user
+    // check the invite code
     if (settings.options.invite == true) {
         if (req.body.invite_code == "" || req.body.invite_code == null) {
             return res.send({ code: 0, msg: "no invite code" })
         }
 
-        const inviteSQL = "select * from codes where invite_code = ? and type = 'invite'"
-        getData(req, res, inviteSQL, req.body.invite_code, (data) => {
+        const db = new Model('codes')
+        db.search({ invite_code: req.body.invite_code }, (data) => {
             if (data == null) {
                 return res.send({ code: 0, msg: "invite code error" })
             }
         })
     }
+    const db = new Model('users')
+    // check the user
+    db.search({ username: req.body.username }, (err, data) => {
+        if (data != undefined || data[0].username === req.body.username) {
+            return res.send({ code: 0, msg: "user already exist" })
+        }
+    })
+
+    // insert the user
+    db.insert({
+        user_id: null,
+        username: req.body.username,
+        password: md5(req.body.password),
+        level: 'user',
+        invite_code: req.body.invite_code == undefined ? null : req.body.invite_code,
+        register_time: new Date(),
+        register_ip: req.ip,
+        login_time: new Date(),
+        login_ip: req.ip,
+        phone: "",
+        email: "",
+        avatar_link: ""
+    },
+        (err, data) => {
+            if (err != null) {
+                console.log(err)
+                return res.send({ code: 0, msg: "register failed: " + err })
+            }
+            res.send({
+                code: 1, msg: "register success"
+            })
+        })
 });
 
 /**
@@ -114,7 +128,13 @@ router.post('/test', function (req, res, next) {
      * "exp": 1678239841
      * }
      */
-    res.send(verifyToken(req.body.token))
+    const inviteSQL = "select * from codes where invite_code = ? and type = 'invite'"
+
+    const db = new Model('codes')
+    db.search({ invite_code: 123, yss: "ad" }, (err, data) => {
+        console.log(err)
+        res.send({ data: data, token: verifyToken(req.body.token) })
+    })
 
 });
 

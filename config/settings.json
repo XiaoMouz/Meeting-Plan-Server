@@ -3,7 +3,7 @@
     "domain":"localhost",
     "port":"3001",
     "options":{
-        "invite":"true",
+        "invite":"false",
         "tokenSecurityKey":"1@doawkp_2-$ssAS2"
     }
 }
