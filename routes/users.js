@@ -6,7 +6,7 @@ const { getToken } = require('../util/token')
 const { verifyToken } = require('../util/token')
 const settings = require('../config/settings.json');
 const { md5 } = require('../util/encrypt');
-const Model = require('../db/Model.js');
+const Model = require('../db/Model');
 
 /**
  * Login Post
@@ -77,13 +77,6 @@ router.post('/register', function (req, res, next) {
         })
     }
     const db = new Model('users')
-    // check the user
-    // todo: waiting for debug
-    db.search({ username: req.body.username }, (err, data) => {
-        if (data != undefined || data[0].username === req.body.username) {
-            return res.send({ code: 0, msg: "user already exist" })
-        }
-    })
 
     // insert the user
     db.insert({
@@ -102,12 +95,13 @@ router.post('/register', function (req, res, next) {
     },
         (err, data) => {
             // todo: waiting for debug
-            if (err != null) {
+            if (err) {
                 console.log(err)
-                return res.send({ code: 0, msg: "register failed: " + err })
+                return res.send({ code: 0, msg: "register failed: username is already exist" })
             }
             res.send({
-                code: 1, msg: "register success"
+                code: 1,
+                msg: "register success"
             })
         })
 });
@@ -130,13 +124,7 @@ router.post('/test', function (req, res, next) {
      * "exp": 1678239841
      * }
      */
-    const inviteSQL = "select * from codes where invite_code = ? and type = 'invite'"
-
-    const db = new Model('codes')
-    db.search({ invite_code: 123, yss: "ad" }, (err, data) => {
-        console.log(err)
-        res.send({ data: data, token: verifyToken(req.body.token) })
-    })
+    console.log(req.data)
 
 });
 
