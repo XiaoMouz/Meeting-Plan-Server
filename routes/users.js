@@ -17,7 +17,7 @@ router.post('/login', function (req, res, next) {
 
     // check the request
     if (req.body.username == null || req.body.password == null) {
-        return res.send(new ResponseBody(200, "request is null"));
+        return res.send(new ResponseBody(400, "request is null"));
     }
 
     db.search({
@@ -25,11 +25,19 @@ router.post('/login', function (req, res, next) {
     },
         (err, data) => {
             if (data == null) {
-                return res.send(new ResponseBody(200, "user not found"))
+                return res.send(new ResponseBody(404, "user not found"))
+            }
+
+            if (data[0].status == 'disabled') {
+                return res.send(new ResponseBody(404, "user not found"))
+            }
+
+            if (data[0].status == 'banned') {
+                return res.send(new ResponseBody(403, "user is banned"))
             }
 
             if (data[0].password != encrypt.md5(req.body.password)) {
-                return res.send(new ResponseBody(200, "password error"))
+                return res.send(new ResponseBody(401, "password error"))
             }
 
             // update the user login time and ip
@@ -61,23 +69,45 @@ router.post('/login', function (req, res, next) {
 router.post('/register', function (req, res, next) {
     // check the request
     if (req.body.username == null || req.body.password == null) {
-        return res.send(new ResponseBody(200, "request is null"));
+        return res.send(new ResponseBody(400, "request is null"));
     }
 
     // check the invite code
-    if (settings.options.invite == true) {
+    if (settings.options.invite == 'true') {
         if (req.body.invite_code == "" || req.body.invite_code == null) {
-            return res.send(new ResponseBody(200, "invite code is null"))
+            return res.send(new ResponseBody(401, "invite code is null"))
         }
 
         const db = new Model('codes')
-        db.search({ invite_code: req.body.invite_code }, (data) => {
-            if (data == null) {
-                return res.send(new ResponseBody(200, "invite code is not exist"))
+        db.search({ code: req.body.invite_code }, (err, data) => {
+            if (err) {
+                return res.send(new ResponseBody(500, "server error", err))
+            }
+
+            if (data[0] == null) {
+                return res.send(new ResponseBody(403, "invite code is not exist"))
+            }
+            if (data[0].type != 'invite') {
+                return res.send(new ResponseBody(403, "invite code is not exist"))
+            }
+            if (data[0].invalid_time < new Date()) {
+                return res.send(new ResponseBody(403, "invite code is expired"))
             }
         })
     }
     const db = new Model('users')
+
+    // check the username
+    db.search({ username: req.body.username }, (err, data) => {
+        if (err) {
+            console.log(err)
+            return res.send(new ResponseBody(500, "server error"))
+        }
+
+        if (data[0] != null) {
+            return res.send(new ResponseBody(201, "username is already exist"))
+        }
+    })
 
     // insert the user
     db.insert({
@@ -95,12 +125,11 @@ router.post('/register', function (req, res, next) {
         avatar_link: ""
     },
         (err, data) => {
-            // todo: waiting for debug
             if (err) {
                 console.log(err)
-                return res.send(new ResponseBody(200, "register failed: username is already exist"))
+                return res.send(new ResponseBody(500, "server error"))
             }
-            res.send(new ResponseBody(200, "register success"))
+            return res.send(new ResponseBody(200, "register success"))
         })
 });
 
