@@ -7,7 +7,7 @@ const { verifyToken } = require('../util/token')
 const settings = require('../config/settings.json')
 const { md5 } = require('../util/encrypt')
 const Model = require('../db/Model')
-const ResponseBody = require('../data/responseBody.js')
+const ResponseBody = require('../data/ResponseBody.js')
 
 /**
  * Login Post

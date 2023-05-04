@@ -15,7 +15,7 @@ const { normalize } = require('path');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(process.env.PORT);
 if (settings.port != "" && settings.port != null)
     port = normalizePort(settings.port);
 app.set('port', port);
@@ -57,12 +57,12 @@ function normalizePort(val) {
         return val;
     }
 
-    if (port >= 0) {
+    if (port > 0 && port <= 65535) {
         // port number
         return port;
     }
 
-    return false;
+    return 3000;
 }
 
 /**

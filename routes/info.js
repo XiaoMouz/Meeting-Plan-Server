@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Model = require('../db/Model.js')
-const ResponseBody = require('../data/responseBody.js')
+const ResponseBody = require('../data/ResponseBody.js')
 
 // resource interface
 router.get('/res', (req, res) => {
