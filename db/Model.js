@@ -2,6 +2,10 @@ const mysql = require('mysql')
 const dbConfig = require('../config/db-config.json')
 
 let Module = class {
+    /**
+     * 初始化 Database Model
+     * @param {*} tableName 需要操作的表名 
+     */
     constructor(tableName) {
         this.config = {
             host: dbConfig.host,
@@ -13,8 +17,7 @@ let Module = class {
         this.tableName = tableName
     }
 
-    // 连接数据库
-    // 连接池方法
+    // Connect to database
     sqlConnect(sql, sqlArr, callBack) {
         const pool = mysql.createPool(this.config)
         pool.getConnection((err, conn) => {
@@ -29,16 +32,27 @@ let Module = class {
         })
     }
 
-    // Insert a function
-     insert(sqlArr, callBack) {
+    /**
+     * 插入数据
+     * @param {*} sqlArr 插入的参数
+     * @param {*} callBack 回调参数
+     */
+    insert(sqlArr, callBack) {
         if (!typeof sqlArr === 'object' || Array.isArray(sqlArr)) {
             throw new Error('sqlArr must be an object')
-        } 
+        }
         const sql = `insert into ${this.tableName} set ?`
         this.sqlConnect(sql, sqlArr, callBack)
     }
 
-    update(sqlArr, callBack, where = null) {
+    /**
+     * 更新数据
+     * @param {*} sqlArr 更新的参数
+     * @param {*} where 需要更新的数据条件
+     * @param {*} callBack 回调函数
+     * @returns 
+     */
+    update(sqlArr, where = null, callBack) {
         if (!typeof sqlArr === 'object' || Array.isArray(sqlArr)) {
             throw new Error('sqlArr must be an object')
         }
@@ -51,6 +65,12 @@ let Module = class {
         this.sqlConnect(sql, sqlArr, callBack)
     }
 
+    /**
+     * 搜索数据
+     * @param {*} sqlArr 搜索条件
+     * @param {*} callBack 回调函数
+     * @returns 
+     */
     search(sqlArr, callBack) {
         if (!typeof sqlArr === 'object' || Array.isArray(sqlArr)) {
             throw new Error('sqlArr must be an object')
@@ -64,7 +84,12 @@ let Module = class {
         this.sqlConnect(sql, sqlArr, callBack)
     }
 
-    delete(sqlArr, callBack) {
+    /**
+     * 硬删除数据
+     * @param {*} sqlArr 删除条件
+     * @param {*} callBack 回调函数
+     */
+    hardDelete(sqlArr, callBack) {
         if (!typeof sqlArr === 'object' || Array.isArray(sqlArr)) {
             throw new Error('sqlArr must be an object')
         }
@@ -72,6 +97,12 @@ let Module = class {
         this.sqlConnect(sql, sqlArr, callBack)
     }
 
+    /**
+     * 自定义函数
+     * @param {*} sql  sql语句
+     * @param {*} sqlArr sql参数
+     * @param {*} callBack 回调函数
+     */
     exec(sql, sqlArr, callBack) {
         this.sqlConnect(sql, sqlArr, callBack)
     }

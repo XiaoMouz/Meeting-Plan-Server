@@ -1,40 +1,29 @@
-const express = require('express');
-const router = express.Router();
-const Model = require('../db/Model.js');
+const express = require('express')
+const router = express.Router()
+const Model = require('../db/Model.js')
+const ResponseBody = require('../data/responseBody.js')
 
-// resource interface
-router.get('/info/res', (req, res) => {
-    const db = new Model('resources')
-    db.search(null, (err, data) => {
-        if (err) {
-            console.log(err)
-            return
-        }
-        res.send(data)
-    })
+
+/**
+ * path: /test
+ * @description test the interface work status
+ */
+router.get('/test/:msg', function (req, res, next) {
+    res.send(req.params)
+});
+
+router.post('/test', function (req, res, next) {
+    /** return types
+     * {
+     * "id": 1,
+     * "username": "XiaoMouz",
+     * "level": "admin",
+     * "iat": 1678153441,
+     * "exp": 1678239841
+     * }
+     */
+    console.log(req.data)
 
 });
 
-// notice interface
-router.get('/info/notice', (req, res) => {
-    const db = new Model('notices')
-    db.search(null, (err, data) => {
-        if (err) {
-            console.log(err)
-            return
-        }
-        res.send(data)
-    })
-})
-router.get('/info/user', (req, res) => {
-    const db = new Model('users')
-    db.search(null, (err, data) => {
-        if (err) {
-            console.log(err)
-            return
-        }
-        res.send(data)
-    })
-})
-
-module.exports = router;
+module.exports = router
