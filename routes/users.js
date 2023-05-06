@@ -133,4 +133,26 @@ router.post('/register', function (req, res, next) {
         })
 });
 
+router.get('/:id', function (req, res, next) {
+    const db = new Model('users')
+
+    db.search({ user_id: req.params.id }, (err, data) => {
+        if (err) {
+            return res.send(new ResponseBody(500, "server error"))
+        }
+
+        if (data[0] == null) {
+            return res.send(new ResponseBody(404, "user not found"))
+        }
+
+        delete data[0].password
+        delete data[0].register_ip
+        delete data[0].login_ip
+        delete data[0].invite_code
+
+        return res.send(new ResponseBody(200, "success", data[0]))
+    })
+
+});
+
 module.exports = router
