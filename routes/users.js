@@ -9,6 +9,10 @@ const { md5 } = require('../util/encrypt')
 const Model = require('../db/Model')
 const ResponseBody = require('../data/ResponseBody.js')
 
+router.all('/', function (req, res, next) {
+    res.send(new ResponseBody(200, "success"))
+});
+
 /**
  * Login Post
  */
@@ -107,30 +111,32 @@ router.post('/register', function (req, res, next) {
         if (data[0] != null) {
             return res.send(new ResponseBody(201, "username is already exist"))
         }
+
+        // insert the user
+        db.insert({
+            user_id: null,
+            username: req.body.username,
+            password: md5(req.body.password),
+            level: 'user',
+            invite_code: req.body.invite_code == undefined ? null : req.body.invite_code,
+            register_time: new Date(),
+            register_ip: req.ip,
+            login_time: new Date(),
+            login_ip: req.ip,
+            phone: "",
+            email: "",
+            avatar_link: ""
+        },
+            (err, data) => {
+                if (err) {
+                    console.log(err)
+                    return res.send(new ResponseBody(500, "server error"))
+                }
+                return res.send(new ResponseBody(200, "register success"))
+            })
     })
 
-    // insert the user
-    db.insert({
-        user_id: null,
-        username: req.body.username,
-        password: md5(req.body.password),
-        level: 'user',
-        invite_code: req.body.invite_code == undefined ? null : req.body.invite_code,
-        register_time: new Date(),
-        register_ip: req.ip,
-        login_time: new Date(),
-        login_ip: req.ip,
-        phone: "",
-        email: "",
-        avatar_link: ""
-    },
-        (err, data) => {
-            if (err) {
-                console.log(err)
-                return res.send(new ResponseBody(500, "server error"))
-            }
-            return res.send(new ResponseBody(200, "register success"))
-        })
+
 });
 
 router.get('/:id', function (req, res, next) {
