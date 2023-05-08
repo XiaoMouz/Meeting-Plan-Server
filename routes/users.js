@@ -29,9 +29,9 @@ router.post('/login', function (req, res, next) {
             }
 
             if (data[0].status == 'disabled') {
-                return res.send(new ResponseBody(404, "user not found"))
+                return res.send(new ResponseBody(404, "user disabled"))
             }
-
+            
             if (data[0].status == 'banned') {
                 return res.send(new ResponseBody(403, "user is banned"))
             }
