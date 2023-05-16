@@ -61,7 +61,7 @@ let Module = class {
             this.sqlConnect(sql, [sqlArr, where], callBack)
             return
         }
-        const sql = `update ${this.tableName} set ?`
+        const sql = `update ${this.tableName} set ? limit 1`
         this.sqlConnect(sql, sqlArr, callBack)
     }
 
@@ -80,7 +80,20 @@ let Module = class {
             this.sqlConnect(sql, sqlArr, callBack)
             return
         }
-        const sql = `select * from ${this.tableName} where ?`
+        const sql = `select * from ${this.tableName} where ? `
+        this.sqlConnect(sql, sqlArr, callBack)
+    }
+
+    searchOne(sqlArr, callBack) {
+        if (!typeof sqlArr === 'object' || Array.isArray(sqlArr)) {
+            throw new Error('sqlArr must be an object')
+        }
+        if (sqlArr === null || Object.keys(sqlArr).length === 0) {
+            const sql = `select * from ${this.tableName}`
+            this.sqlConnect(sql, sqlArr, callBack)
+            return
+        }
+        const sql = `select * from ${this.tableName} where ? limit 1`
         this.sqlConnect(sql, sqlArr, callBack)
     }
 

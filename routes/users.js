@@ -13,8 +13,12 @@ router.all('/', function (req, res, next) {
     res.send(new ResponseBody(200, "success"))
 });
 
+
 /**
- * Login Post
+ * path: /api/v1/user/login
+ * @description user login interface, post method
+ * @body username: string, 
+ *       password: string
  */
 router.post('/login', function (req, res, next) {
     const db = new Model('users')
@@ -35,7 +39,7 @@ router.post('/login', function (req, res, next) {
             if (data[0].status == 'disabled') {
                 return res.send(new ResponseBody(404, "user disabled"))
             }
-            
+
             if (data[0].status == 'banned') {
                 return res.send(new ResponseBody(403, "user is banned"))
             }
@@ -68,7 +72,11 @@ router.post('/login', function (req, res, next) {
 });
 
 /**
- * Register Post
+ * path: /api/v1/user/register
+ * @description user register interface, post method
+ * @body username: string, 
+ *       password: string, 
+ *       invite_code: string
  */
 router.post('/register', function (req, res, next) {
     // check the request
@@ -139,11 +147,17 @@ router.post('/register', function (req, res, next) {
 
 });
 
+/**
+ * path: /api/v1/user/{id}
+ * @description user register interface, post method
+ * @param id: number
+ */
 router.get('/:id', function (req, res, next) {
     const db = new Model('users')
 
-    db.search({ user_id: req.params.id }, (err, data) => {
+    db.searchOne({ user_id: req.params.id }, (err, data) => {
         if (err) {
+            console.log(err)
             return res.send(new ResponseBody(500, "server error"))
         }
 
@@ -151,10 +165,15 @@ router.get('/:id', function (req, res, next) {
             return res.send(new ResponseBody(404, "user not found"))
         }
 
+        delete data[0].user_id
         delete data[0].password
-        delete data[0].register_ip
-        delete data[0].login_ip
         delete data[0].invite_code
+        delete data[0].register_time
+        delete data[0].register_ip
+        delete data[0].login_time
+        delete data[0].login_ip
+        delete data[0].phone
+        delete data[0].email
 
         return res.send(new ResponseBody(200, "success", data[0]))
     })

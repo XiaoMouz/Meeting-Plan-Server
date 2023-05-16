@@ -12,6 +12,10 @@ router.get('/test/:msg', function (req, res, next) {
     res.send(req.params)
 });
 
+/**
+ * path: /test
+ * @description test the interface work status
+ */
 router.post('/test', function (req, res, next) {
     /** return types
      * {
