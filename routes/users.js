@@ -81,29 +81,29 @@ router.post('/login', function (req, res, next) {
 router.post('/register', function (req, res, next) {
     // check the request
     if (req.body.username == null || req.body.password == null) {
-        return res.send(new ResponseBody(400, "request is null"));
+        return res.status(400).send(new ResponseBody(400, "request is null"));
     }
 
     // check the invite code
     if (settings.options.invite == 'true') {
         if (req.body.invite_code == "" || req.body.invite_code == null) {
-            return res.send(new ResponseBody(401, "invite code is null"))
+            return res.status(401).send(new ResponseBody(401, "invite code is null"))
         }
 
         const db = new Model('codes')
         db.search({ code: req.body.invite_code }, (err, data) => {
             if (err) {
-                return res.send(new ResponseBody(500, "server error", err))
+                return res.status(500).send(new ResponseBody(500, "server error", err))
             }
 
             if (data[0] == null) {
-                return res.send(new ResponseBody(403, "invite code is not exist"))
+                return res.status(403).send(new ResponseBody(403, "invite code is not exist"))
             }
             if (data[0].type != 'invite') {
-                return res.send(new ResponseBody(403, "invite code is not exist"))
+                return res.status(43).send(new ResponseBody(403, "invite code is not exist"))
             }
             if (data[0].invalid_time < new Date()) {
-                return res.send(new ResponseBody(403, "invite code is expired"))
+                return res.status(403).send(new ResponseBody(403, "invite code is expired"))
             }
         })
     }
@@ -113,11 +113,11 @@ router.post('/register', function (req, res, next) {
     db.search({ username: req.body.username }, (err, data) => {
         if (err) {
             console.log(err)
-            return res.send(new ResponseBody(500, "server error"))
+            return res.status(500).send(new ResponseBody(500, "server error"))
         }
 
         if (data[0] != null) {
-            return res.send(new ResponseBody(201, "username is already exist"))
+            return res.status(201).send(new ResponseBody(201, "username is already exist"))
         }
 
         // insert the user
@@ -138,7 +138,7 @@ router.post('/register', function (req, res, next) {
             (err, data) => {
                 if (err) {
                     console.log(err)
-                    return res.send(new ResponseBody(500, "server error"))
+                    return res.status(500).send(new ResponseBody(500, "server error"))
                 }
                 return res.send(new ResponseBody(200, "register success"))
             })
@@ -158,11 +158,11 @@ router.get('/:id', function (req, res, next) {
     db.searchOne({ user_id: req.params.id }, (err, data) => {
         if (err) {
             console.log(err)
-            return res.send(new ResponseBody(500, "server error"))
+            return res.status(500).send(new ResponseBody(500, "server error"))
         }
 
         if (data[0] == null) {
-            return res.send(new ResponseBody(404, "user not found"))
+            return res.status(404).send(new ResponseBody(404, "user not found"))
         }
 
         delete data[0].user_id

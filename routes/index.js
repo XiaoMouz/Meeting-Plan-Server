@@ -5,7 +5,7 @@ const ResponseBody = require('../data/ResponseBody.js')
 
 
 /**
- * path: /test
+ * path: /ap1/v1/test
  * @description test the interface work status
  */
 router.get('/test/:msg', function (req, res, next) {
@@ -13,7 +13,7 @@ router.get('/test/:msg', function (req, res, next) {
 });
 
 /**
- * path: /test
+ * path: /api/v1/test
  * @description test the interface work status
  */
 router.post('/test', function (req, res, next) {

@@ -28,7 +28,7 @@ router.get('/notice', (req, res) => {
     db.search(null, (err, data) => {
         if (err) {
             console.log(err)
-            res.send(new ResponseBody(500, err))
+            res.status(500).send(new ResponseBody(500, err))
             return
         }
         res.send(new ResponseBody(200, "success", data))
@@ -44,7 +44,7 @@ router.get('/user', (req, res) => {
     db.exec('select count(1) from users', null, (err, data) => {
         if (err) {
             console.log(err)
-            res.send(new ResponseBody(500, err))
+            res.status(500).send(new ResponseBody(500, err))
             return
         }
         resultData = { "total_user": Object.values(data[0])[0] }
