@@ -26,8 +26,8 @@ router.post('/test', function (req, res, next) {
      * "exp": 1678239841
      * }
      */
-    console.log(req.data)
-
+    let r = { "status": "200 OK", "data": req.body }
+    res.send(r)
 });
 
 module.exports = router
